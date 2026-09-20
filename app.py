@@ -48,8 +48,8 @@ def home():
 # CADASTRO
 # -----------------------------------------------------------------------------
 
-@app.post("/cadastros", tags=[cadastro_tag])
-
+@app.post("/cadastros", tags=[cadastro_tag],
+          responses={"200": RespostaCadastroSchema, "409": ErrorSchema, "500": ErrorSchema})
 def criar_cadastro(form: CriacaoCadastroSchema):
     """Adiciona um novo material à base com campos individuais"""
     session = Session()
@@ -70,7 +70,8 @@ def criar_cadastro(form: CriacaoCadastroSchema):
     finally:
         session.close()
 
-@app.get("/cadastros", tags=[cadastro_tag], responses={"200": ListaCadastrosSchema})
+@app.get("/cadastros", tags=[cadastro_tag],
+         responses={"200": ListaCadastrosSchema, "500": ErrorSchema})
 def listar_cadastros():
     """Lista todos os produtos cadastrados."""
     session = Session()
@@ -89,8 +90,10 @@ def listar_cadastros():
     finally:
         session.close()
 
-@app.delete("/cadastros/<int:id>", tags=[cadastro_tag])
+@app.delete("/cadastros/<int:id>", tags=[cadastro_tag],
+            responses={"200": MensagemSchema, "400": ErrorSchema, "404": ErrorSchema})
 def deletar_cadastro(path: IdPathSchema):
+    """Remove um material, se ele não tiver solicitações associadas."""
     session = Session()
 
     cadastro = session.get(Cadastro, path.id)
@@ -117,8 +120,9 @@ def deletar_cadastro(path: IdPathSchema):
 # -----------------------------------------------------------------------------
     
 
-@app.post("/solicitacoes", tags=[solicitacao_tag], responses={"201": RespostaSolicitacaoSchema})
-def criar_solicitacao(form: CriacaoSolicitacaoSchema): 
+@app.post("/solicitacoes", tags=[solicitacao_tag],
+          responses={"201": RespostaSolicitacaoSchema, "404": ErrorSchema, "500": ErrorSchema})
+def criar_solicitacao(form: CriacaoSolicitacaoSchema):
     """Cria uma solicitação com campos individuais de preenchimento"""
     session = Session()
     try:
@@ -147,8 +151,10 @@ def criar_solicitacao(form: CriacaoSolicitacaoSchema):
         session.close()
 
 
-@app.put("/solicitacoes/<int:id>/atender", tags=[solicitacao_tag])
+@app.put("/solicitacoes/<int:id>/atender", tags=[solicitacao_tag],
+         responses={"200": RespostaSolicitacaoSchema, "400": ErrorSchema, "404": ErrorSchema})
 def atender_solicitacao(path: IdPathSchema):
+    """Atende a solicitação e gera o item correspondente no estoque."""
     session = Session()
     try:
         solicitacao = session.get(Solicitacao, path.id)
@@ -165,7 +171,8 @@ def atender_solicitacao(path: IdPathSchema):
         session.close()
 
 
-@app.get("/solicitacoes", tags=[solicitacao_tag], responses={"200": ListaSolicitacoesSchema})
+@app.get("/solicitacoes", tags=[solicitacao_tag],
+         responses={"200": ListaSolicitacoesSchema})
 def listar_solicitacoes():
     """Busca todas as solicitações feitas.
     Retorna uma listagem de solicitações.
@@ -186,8 +193,10 @@ def listar_solicitacoes():
         session.close()
 
 
-@app.delete("/solicitacoes/<int:id>", tags=[solicitacao_tag])
+@app.delete("/solicitacoes/<int:id>", tags=[solicitacao_tag],
+            responses={"200": MensagemSchema, "400": ErrorSchema, "404": ErrorSchema})
 def deletar_solicitacao(path: IdPathSchema):
+    """Remove uma solicitação, desde que ela ainda não tenha sido atendida."""
     session = Session()
 
     solicitacao = session.get(Solicitacao, path.id)
@@ -229,8 +238,10 @@ def listar_estoque():
         session.close()
 
 
-@app.delete("/estoque/<int:id>", tags=[estoque_tag])
+@app.delete("/estoque/<int:id>", tags=[estoque_tag],
+            responses={"200": MensagemSchema, "404": ErrorSchema})
 def deletar_estoque(path: IdPathSchema):
+    """Remove um item do estoque."""
     session = Session()
 
     # Busca o item de estoque pelo ID

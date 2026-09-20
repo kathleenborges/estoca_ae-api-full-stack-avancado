@@ -14,3 +14,4 @@ from schemas.cadastro import (
 )
 from schemas.error import ErrorSchema
 from schemas.path import IdPathSchema
+from schemas.mensagem import MensagemSchema
