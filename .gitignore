@@ -1,0 +1,6 @@
+venv/
+venv-api/
+__pycache__/
+*.pyc
+.env
+*.db
