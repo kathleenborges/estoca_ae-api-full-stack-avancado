@@ -200,6 +200,7 @@ def test_atender_solicitacao_gera_estoque(client):
     assert response.status_code == 200
     assert len(itens) == 1
     assert itens[0]["quantidade_disponivel"] == 7
+    assert itens[0]["nome"] == PAYLOAD_CADASTRO["nome"]
 
 
 def test_deletar_estoque_sucesso(client):
