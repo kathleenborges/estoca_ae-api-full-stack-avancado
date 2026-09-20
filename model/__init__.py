@@ -1,28 +1,31 @@
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
+from sqlalchemy.pool import StaticPool
 import os
 
-# importando os elementos definidos no modelo
 from model.base import Base
 from model.cadastro import Cadastro
 from model.estoque import Estoque
 from model.solicitacao import Solicitacao
 
-
 # Database Configuração
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "database", "db.sqlite3")
 
-os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+# Permite trocar o banco (ex.: nos testes) sem mexer no código
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-# cria a engine de conexão com o banco
+if DATABASE_URL is None:
+    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+    DATABASE_URL = f"sqlite:///{DB_PATH}"
+
 engine = create_engine(
-    f"sqlite:///{DB_PATH}",
+    DATABASE_URL,
     connect_args={"check_same_thread": False},
+    poolclass=StaticPool if ":memory:" in DATABASE_URL else None,
     echo=False
 )
 
-# Instancia um criador de seção com o banco
 Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base.metadata.create_all(bind=engine)

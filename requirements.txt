@@ -5,3 +5,4 @@ flask-openapi3-swagger==5.31.0
 pydantic==2.12.5
 SQLAlchemy==2.0.45
 Werkzeug==3.1.4
+pytest==7.4.2
